@@ -320,9 +320,7 @@ class CommandQueueImplementation @Inject constructor(
             add(CommandSMBBolus(injector, detailedBolusInfo, callback))
         } else {
             add(CommandBolus(injector, detailedBolusInfo, callback, type, carbsRunnable))
-            if (type == CommandType.BOLUS) { // Bring up bolus progress dialog (start here, so the dialog is shown when the bolus is requested,
-                // not when the Bolus command is starting. The command closes the dialog upon completion).
-                showBolusProgressDialog(detailedBolusInfo)
+            if (type == CommandType.BOLUS) {
                 // Notify Wear about upcoming bolus
                 rxBus.send(EventMobileToWear(EventData.BolusProgress(percent = 0, status = rh.gs(app.aaps.core.ui.R.string.goingtodeliver, detailedBolusInfo.insulin))))
             }
