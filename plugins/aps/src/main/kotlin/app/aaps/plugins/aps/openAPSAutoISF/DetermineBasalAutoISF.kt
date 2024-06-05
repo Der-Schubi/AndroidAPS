@@ -69,6 +69,12 @@ class DetermineBasalAutoISF @Inject constructor(
             return false
         }
 
+        // disable SMB while we have COB
+        if (meal_data.mealCOB != 0.0) {
+            consoleError.add("SMB disabled for COB of ${meal_data.mealCOB}");
+            return false
+        }
+
         // enable SMB/UAM if always-on (unless previously disabled for high temptarget)
         if (profile.enableSMB_always) {
             consoleError.add("SMB enabled due to enableSMB_always")
