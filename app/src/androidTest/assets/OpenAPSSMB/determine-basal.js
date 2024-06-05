@@ -66,7 +66,7 @@ function enable_smb(
     }
 
     // disable SMB while we have COB
-    if (meal_data.mealCOB) {
+    if (profile.disableSMB_with_COB === true && meal_data.mealCOB) {
         if (meal_data.bwCarbs) {
             console.error("Warning: SMB disabled with Bolus Wizard carbs");
         } else {

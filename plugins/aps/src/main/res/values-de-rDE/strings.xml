@@ -67,6 +67,8 @@
     <string name="enable_smb_with_temp_target_summary">Aktiviere SMB, wenn ein temporäres Ziel aktiv ist (bald essen, Aktivität)</string>
     <string name="enable_smb_with_high_temp_target">Aktiviere SMB bei temporären Zielen oberhalb des regulären Ziels</string>
     <string name="enable_smb_with_high_temp_target_summary">Aktiviere SMB bei hohen temporären Zielen (Sport, über 100 mg/dl bzw. 5,5 mmol/L)</string>
+    <string name="disable_smb_with_cob">Deaktiviere SMB während aktiver Kohlenhydrate.</string>
+    <string name="disable_smb_with_cob_summary">SMB deaktivieren, wenn Kohlenhydrate aktiv sind</string>
     <string name="smb_max_minutes_summary">SMB Basal-Limit in Minuten</string>
     <string name="uam_smb_max_minutes">UAM SMB max. Minuten</string>
     <string name="uam_smb_max_minutes_summary">SMB Basal-Limit in Minuten für UAM</string>

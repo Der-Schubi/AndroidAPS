@@ -89,6 +89,7 @@
     <string name="key_openaps_allow_smb_with_COB" translatable="false">enableSMB_with_COB</string>
     <string name="key_openaps_allow_smb_with_low_temp_target" translatable="false">enableSMB_with_temptarget</string>
     <string name="key_openaps_enable_smb_after_carbs" translatable="false">enableSMB_after_carbs</string>
+    <string name="key_openaps_forbid_smb_with_COB" translatable="false">disableSMB_with_COB</string>
     <string name="key_openaps_smb_interval" translatable="false">smbinterval</string>
     <string name="key_openaps_smb_max_minutes" translatable="false">smbmaxminutes</string>
     <string name="key_openaps_uam_smb_max_minutes" translatable="false">uamsmbmaxminutes</string>

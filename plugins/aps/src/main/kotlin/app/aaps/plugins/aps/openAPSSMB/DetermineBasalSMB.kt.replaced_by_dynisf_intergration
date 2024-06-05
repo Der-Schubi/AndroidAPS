@@ -66,7 +66,7 @@ class DetermineBasalSMB @Inject constructor(
         }
 
         // disable SMB while we have COB
-        if (meal_data.mealCOB != 0.0) {
+        if (profile.disableSMB_with_COB && meal_data.mealCOB != 0.0) {
             consoleError.add("SMB disabled for COB of ${meal_data.mealCOB}");
             return false
         }

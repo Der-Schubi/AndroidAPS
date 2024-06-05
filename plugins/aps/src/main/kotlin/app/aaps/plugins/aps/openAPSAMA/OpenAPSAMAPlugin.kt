@@ -214,6 +214,7 @@ class OpenAPSAMAPlugin @Inject constructor(
             allowSMB_with_high_temptarget = false, // not used
             enableSMB_always = false, // not used
             enableSMB_after_carbs = false, // not used
+            disableSMB_with_COB = false, // not used
             maxSMBBasalMinutes = 0, // not used
             maxUAMSMBBasalMinutes = 0, // not used
             bolus_increment = pump.pumpDescription.bolusStep, // not used

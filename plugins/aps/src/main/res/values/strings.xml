@@ -74,6 +74,8 @@
     <string name="enable_smb_with_temp_target_summary">Enable SMB when there is temp target active (eating soon, exercise)</string>
     <string name="enable_smb_with_high_temp_target">Enable SMB with high temp targets</string>
     <string name="enable_smb_with_high_temp_target_summary">Enable SMB when there is high temp target active (exercise, above 100 mg/dl or 5.5 mmol/l)</string>
+    <string name="disable_smb_with_cob">Disable SMB with COB</string>
+    <string name="disable_smb_with_cob_summary">Disable SMB when there is COB active.</string>
     <string name="smb_max_minutes_summary">Max minutes of basal to limit SMB to</string>
     <string name="uam_smb_max_minutes">UAM SMB max minutes</string>
     <string name="uam_smb_max_minutes_summary">Max minutes of basal to limit SMB to for UAM</string>
