@@ -65,6 +65,16 @@ function enable_smb(
         return false;
     }
 
+    // disable SMB while we have COB
+    if (meal_data.mealCOB) {
+        if (meal_data.bwCarbs) {
+            console.error("Warning: SMB disabled with Bolus Wizard carbs");
+        } else {
+            console.error("SMB disabled due to COB of",meal_data.mealCOB);
+        }
+        return false;
+    }
+
     // enable SMB/UAM if always-on (unless previously disabled for high temptarget)
     if (profile.enableSMB_always === true) {
         if (meal_data.bwFound) {
