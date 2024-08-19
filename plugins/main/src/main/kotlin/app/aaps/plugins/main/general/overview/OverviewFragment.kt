@@ -476,7 +476,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                 }
 
                 R.id.stop_button         -> {
-                    aapsLogger.debug("Stop SMB delivery button pressed")
+                    aapsLogger.debug("Stop BOLUS button pressed")
                     binding.pumpStatusLayout.visibility = View.GONE
                     commandQueue.cancelAllBoluses(null)
                 }
@@ -1193,7 +1193,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.pumpStatus.text = status
         binding.pumpStatusLayout.visibility = (status != "").toVisibility()
 
-        if (commandQueue.performing()?.commandType == Command.CommandType.SMB_BOLUS) {
+        if (commandQueue.performing()?.commandType == Command.CommandType.BOLUS) {
             binding.stopButton.visibility = View.VISIBLE
         } else {
             binding.stopButton.visibility = View.GONE
