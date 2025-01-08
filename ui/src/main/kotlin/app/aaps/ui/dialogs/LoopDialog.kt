@@ -134,8 +134,8 @@ class LoopDialog : DaggerDialogFragment() {
         binding.overviewDisconnect15m.setOnClickListener { if (showOkCancel) onClickOkCancelEnabled(it) else onClick(it); dismiss() }
         binding.overviewDisconnect30m.setOnClickListener { if (showOkCancel) onClickOkCancelEnabled(it) else onClick(it); dismiss() }
         binding.overviewDisconnect1h.setOnClickListener { if (showOkCancel) onClickOkCancelEnabled(it) else onClick(it); dismiss() }
-        binding.overviewDisconnect2h.setOnClickListener { if (showOkCancel) onClickOkCancelEnabled(it) else onClick(it); dismiss() }
         binding.overviewDisconnect3h.setOnClickListener { if (showOkCancel) onClickOkCancelEnabled(it) else onClick(it); dismiss() }
+        binding.overviewDisconnect6h.setOnClickListener { if (showOkCancel) onClickOkCancelEnabled(it) else onClick(it); dismiss() }
 
         // cancel button
         binding.cancel.setOnClickListener { dismiss() }
@@ -269,8 +269,8 @@ class LoopDialog : DaggerDialogFragment() {
             R.id.overview_disconnect_15m -> description = rh.gs(R.string.disconnectpumpfor15m)
             R.id.overview_disconnect_30m -> description = rh.gs(R.string.disconnectpumpfor30m)
             R.id.overview_disconnect_1h  -> description = rh.gs(R.string.disconnectpumpfor1h)
-            R.id.overview_disconnect_2h  -> description = rh.gs(R.string.disconnectpumpfor2h)
             R.id.overview_disconnect_3h  -> description = rh.gs(R.string.disconnectpumpfor3h)
+            R.id.overview_disconnect_6h  -> description = rh.gs(R.string.disconnectpumpfor6h)
         }
         activity?.let { activity ->
             OKDialog.showConfirmation(activity, rh.gs(app.aaps.core.ui.R.string.confirm), description, Runnable {
@@ -397,17 +397,17 @@ class LoopDialog : DaggerDialogFragment() {
                 return true
             }
 
-            R.id.overview_disconnect_2h                   -> {
+            R.id.overview_disconnect_3h                   -> {
                 profileFunction.getProfile()?.let { profile ->
-                    loop.goToZeroTemp(T.hours(2).mins().toInt(), profile, OE.Reason.DISCONNECT_PUMP, Action.DISCONNECT, Sources.LoopDialog, listOf(ValueWithUnit.Hour(2)))
+                    loop.goToZeroTemp(T.hours(3).mins().toInt(), profile, OE.Reason.DISCONNECT_PUMP, Action.DISCONNECT, Sources.LoopDialog, listOf(ValueWithUnit.Hour(3)))
                     rxBus.send(EventRefreshOverview("suspend_menu"))
                 }
                 return true
             }
 
-            R.id.overview_disconnect_3h                   -> {
+            R.id.overview_disconnect_6h                   -> {
                 profileFunction.getProfile()?.let { profile ->
-                    loop.goToZeroTemp(T.hours(3).mins().toInt(), profile, OE.Reason.DISCONNECT_PUMP, Action.DISCONNECT, Sources.LoopDialog, listOf(ValueWithUnit.Hour(3)))
+                    loop.goToZeroTemp(T.hours(6).mins().toInt(), profile, OE.Reason.DISCONNECT_PUMP, Action.DISCONNECT, Sources.LoopDialog, listOf(ValueWithUnit.Hour(6)))
                     rxBus.send(EventRefreshOverview("suspend_menu"))
                 }
                 return true
