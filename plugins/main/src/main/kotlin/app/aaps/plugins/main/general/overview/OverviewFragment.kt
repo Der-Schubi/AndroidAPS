@@ -253,6 +253,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.buttonsLayout.quickWizardButton.setOnLongClickListener(this)
         binding.infoLayout.apsMode.setOnClickListener(this)
         binding.infoLayout.apsMode.setOnLongClickListener(this)
+        binding.stopButton.setOnClickListener(this)
     }
 
     @Synchronized
@@ -467,6 +468,13 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                         if (isAdded) uiInteraction.runLoopDialog(childFragmentManager, 1)
                     })
                 }
+
+                R.id.stop_button         -> {
+                    aapsLogger.debug("Stop BOLUS button pressed")
+                    binding.pumpStatusLayout.visibility = View.GONE
+                    commandQueue.cancelAllBoluses(null)
+                }
+
             }
         }
     }
@@ -1234,6 +1242,12 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         val status = overviewData.pumpStatus
         binding.pumpStatus.text = status
         binding.pumpStatusLayout.visibility = (status != "").toVisibility()
+
+        if (commandQueue.performing()?.commandType == Command.CommandType.BOLUS) {
+            binding.stopButton.visibility = View.VISIBLE
+        } else {
+            binding.stopButton.visibility = View.GONE
+        }
     }
 
     private fun updateNotification() {
