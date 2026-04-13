@@ -679,24 +679,6 @@ class ComposeMainActivity : AppCompatActivity() {
                 findScreenDef = { key -> findScreenDef(key) },
             )
         }
-
-        // Modal bolus progress overlay — shown above everything for standard bolus
-        bolusState?.let { state ->
-            if (!state.isSMB) {
-                val pumpStatus = pumpCommunicationStatus.statusBanner()?.text ?: ""
-                val queueStatus = pumpCommunicationStatus.queueStatus()
-                PumpActivityDialog(
-                    bolusState = state,
-                    pumpStatus = pumpStatus,
-                    queueStatus = queueStatus,
-                    isModal = true,
-                    onStop = {
-                        commandQueue.cancelAllBoluses(null)
-                    },
-                    onDismiss = { }
-                )
-            }
-        }
     }
 
     private fun findScreenDef(key: String): PreferenceSubScreenDef? {
