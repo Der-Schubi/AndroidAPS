@@ -348,7 +348,9 @@ jobs:
             echo "✅ Uploaded: $NAME"
           }
 
-          upload_to_gdrive "aaps-${VERSION}${VERSION_SUFFIX}.apk" "aaps-${VERSION}${VERSION_SUFFIX}.apk"
-          upload_to_gdrive "aaps-wear-${VERSION}${VERSION_SUFFIX}.apk" "aaps-wear-${VERSION}${VERSION_SUFFIX}.apk"
+          DATE=$(date +%Y%m%d_%H%M)
+
+          upload_to_gdrive "aaps-${VERSION}${VERSION_SUFFIX}.apk" "${DATE}-aaps-${VERSION}${VERSION_SUFFIX}.apk"
+          upload_to_gdrive "aaps-wear-${VERSION}${VERSION_SUFFIX}.apk" "${DATE}-aaps-wear-${VERSION}${VERSION_SUFFIX}.apk"
 
           echo "🎉 APKs successfully uploaded to Google Drive!"
