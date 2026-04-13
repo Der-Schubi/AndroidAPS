@@ -40,6 +40,7 @@
     <string name="duration1h">1 Std.</string>
     <string name="duration2h">2 Std.</string>
     <string name="duration3h">3 Std.</string>
+    <string name="duration6h">6 Std.</string>
     <string name="duration10h">10 Std.</string>
     <!-- WizardDialog -->
     <string name="missing_carbs">%1$d g fehlen</string>
