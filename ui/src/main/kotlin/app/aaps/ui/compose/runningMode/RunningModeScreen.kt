@@ -320,13 +320,13 @@ private fun PumpDisconnectSection(
     val duration15mText = stringResource(R.string.duration15m)
     val duration30mText = stringResource(R.string.duration30m)
     val duration1hText = stringResource(R.string.duration1h)
-    val duration2hText = stringResource(R.string.duration2h)
     val duration3hText = stringResource(R.string.duration3h)
+    val duration6hText = stringResource(R.string.duration6h)
     val disconnect15mText = stringResource(R.string.disconnectpumpfor15m)
     val disconnect30mText = stringResource(R.string.disconnectpumpfor30m)
     val disconnect1hText = stringResource(R.string.disconnectpumpfor1h)
-    val disconnect2hText = stringResource(R.string.disconnectpumpfor2h)
     val disconnect3hText = stringResource(R.string.disconnectpumpfor3h)
+    val disconnect6hText = stringResource(R.string.disconnectpumpfor6h)
 
     SectionCard(title = title) {
         if (isDisconnected && allowedModes.contains(RM.Mode.RESUME)) {
@@ -357,15 +357,16 @@ private fun PumpDisconnectSection(
                     Modifier.weight(1f)
                 )
                 CompactButton(
-                    duration2hText, RM.Mode.DISCONNECTED_PUMP,
-                    { onAction(PendingRunningModeAction(RM.Mode.DISCONNECTED_PUMP, Action.DISCONNECT, 120, disconnect2hText)) },
-                    Modifier.weight(1f)
-                )
-                CompactButton(
                     duration3hText, RM.Mode.DISCONNECTED_PUMP,
                     { onAction(PendingRunningModeAction(RM.Mode.DISCONNECTED_PUMP, Action.DISCONNECT, 180, disconnect3hText)) },
                     Modifier.weight(1f)
                 )
+                CompactButton(
+                    duration6hText, RM.Mode.DISCONNECTED_PUMP,
+                    { onAction(PendingRunningModeAction(RM.Mode.DISCONNECTED_PUMP, Action.DISCONNECT, 360, disconnect6hText)) },
+                    Modifier.weight(1f)
+                )
+
             }
         }
     }
