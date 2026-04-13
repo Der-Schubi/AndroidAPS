@@ -371,7 +371,9 @@ jobs:
           CHERRY_PICK_SAFE=$(echo "$CHERRY_PICK_SAFE" | sed 's/[^a-zA-Z0-9_-]/_/g')
           echo "CHERRY_PICK_SAFE=$CHERRY_PICK_SAFE" >> $GITHUB_ENV
 
-          upload_to_gdrive "aaps-${VERSION}${VERSION_SUFFIX}.apk" "aaps-${VERSION}${VERSION_SUFFIX}_CP-${CHERRY_PICK_SAFE}.apk"
-          upload_to_gdrive "aaps-wear-${VERSION}${VERSION_SUFFIX}.apk" "aaps-wear-${VERSION}${VERSION_SUFFIX}_CP-${CHERRY_PICK_SAFE}.apk"
+          DATE=$(date +%Y%m%d_%H%M)
+
+          upload_to_gdrive "aaps-${VERSION}${VERSION_SUFFIX}.apk" "${DATE}-aaps-${VERSION}${VERSION_SUFFIX}_CP-${CHERRY_PICK_SAFE}.apk"
+          upload_to_gdrive "aaps-wear-${VERSION}${VERSION_SUFFIX}.apk" "${DATE}-aaps-wear-${VERSION}${VERSION_SUFFIX}_CP-${CHERRY_PICK_SAFE}.apk"
 
           echo "🎉 APKs successfully uploaded to Google Drive!"
