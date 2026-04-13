@@ -307,8 +307,8 @@ private fun PumpDisconnectSection(
     val duration15mText = stringResource(UiStrings.duration15m)
     val duration30mText = stringResource(UiStrings.duration30m)
     val duration1hText = stringResource(UiStrings.duration1h)
-    val duration2hText = stringResource(UiStrings.duration2h)
     val duration3hText = stringResource(UiStrings.duration3h)
+    val duration6hText = stringResource(UiStrings.duration6h)
 
     // While disconnected both rows are shown: Reconnect, and the durations to extend the disconnect.
     // A duration picked while disconnected starts a new disconnect from now.
@@ -343,15 +343,16 @@ private fun PumpDisconnectSection(
                     Modifier.weight(1f)
                 )
                 CompactButton(
-                    duration2hText, RM.Mode.DISCONNECTED_PUMP,
-                    { onAction(PendingRunningModeAction(RM.Mode.DISCONNECTED_PUMP, Action.DISCONNECT, 120)) },
-                    Modifier.weight(1f)
-                )
-                CompactButton(
                     duration3hText, RM.Mode.DISCONNECTED_PUMP,
                     { onAction(PendingRunningModeAction(RM.Mode.DISCONNECTED_PUMP, Action.DISCONNECT, 180)) },
                     Modifier.weight(1f)
                 )
+                CompactButton(
+                    duration6hText, RM.Mode.DISCONNECTED_PUMP,
+                    { onAction(PendingRunningModeAction(RM.Mode.DISCONNECTED_PUMP, Action.DISCONNECT, 360)) },
+                    Modifier.weight(1f)
+                )
+
             }
         }
     }
