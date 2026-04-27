@@ -20,8 +20,6 @@ import app.aaps.plugins.automation.R
 import app.aaps.plugins.automation.elements.ComparatorExists
 import app.aaps.plugins.automation.elements.InputDuration
 import app.aaps.plugins.automation.elements.InputTempTarget
-import app.aaps.plugins.automation.triggers.Trigger
-import app.aaps.plugins.automation.triggers.TriggerTempTarget
 import dagger.android.HasAndroidInjector
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -37,8 +35,6 @@ class ActionStartTempTarget(injector: HasAndroidInjector) : Action(injector) {
 
     var value = InputTempTarget(profileFunction)
     var duration = InputDuration(30, InputDuration.TimeUnit.MINUTES)
-
-    override var precondition: Trigger? = TriggerTempTarget(injector, ComparatorExists.Compare.NOT_EXISTS)
 
     override fun friendlyName(): Int = R.string.starttemptarget
     override fun shortDescription(): String = rh.gs(R.string.starttemptarget) + ": " + tt().friendlyDescription(value.units, rh, profileUtil)
