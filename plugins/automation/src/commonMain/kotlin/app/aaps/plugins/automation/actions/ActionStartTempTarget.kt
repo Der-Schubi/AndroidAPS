@@ -25,9 +25,7 @@ import app.aaps.core.utils.lenientString
 import app.aaps.plugins.automation.elements.ComparatorExists
 import app.aaps.plugins.automation.elements.InputDuration
 import app.aaps.plugins.automation.elements.InputTempTarget
-import app.aaps.plugins.automation.triggers.Trigger
 import app.aaps.plugins.automation.triggers.TriggerDeps
-import app.aaps.plugins.automation.triggers.TriggerTempTarget
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.serialization.json.buildJsonObject
@@ -49,8 +47,6 @@ class ActionStartTempTarget(
 
     var value = InputTempTarget(profileFunction)
     var duration = InputDuration(30, InputDuration.TimeUnit.MINUTES)
-
-    override var precondition: Trigger? = TriggerTempTarget(triggerDeps, ComparatorExists.Compare.NOT_EXISTS)
 
     override fun friendlyName(): TextRef = AutomationStrings.starttemptarget
     override fun shortDescription(): String = rh.gs(AutomationStrings.starttemptarget) + ": " + tt().friendlyDescription(value.units, rh, profileUtil)
