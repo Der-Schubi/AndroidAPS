@@ -117,8 +117,6 @@ class FillDialogViewModel(
     }
 
     init {
-        val preselect = FillPreselect.entries[savedStateHandle.get<Int>("preselect") ?: 0]
-        // A prime is in pump units, so its max and its step are those of the pump itself.
         val maxInsulin = constraintChecker.applyPrimingConstraints(PumpInsulin(Double.MAX_VALUE)).cU
         val bolusStep = activePlugin.activePumpInternal.pumpDescription.bolusStep
 
@@ -127,8 +125,8 @@ class FillDialogViewModel(
         _uiState.update {
             FillDialogUiState(
                 insulin = 0.0,
-                siteChange = preselect == FillPreselect.SITE_CHANGE,
-                insulinCartridgeChange = preselect == FillPreselect.CARTRIDGE_CHANGE,
+                siteChange = true,
+                insulinCartridgeChange = false,
                 notes = "",
                 eventTime = dateUtil.now(),
                 eventTimeChanged = false,
