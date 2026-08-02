@@ -116,7 +116,6 @@ class FillDialogViewModel(
     }
 
     init {
-        val preselect = FillPreselect.entries[savedStateHandle.get<Int>("preselect") ?: 0]
         val maxInsulin = constraintChecker.getMaxBolusAllowed().value()
         val bolusStep = activePlugin.activePump.pumpDescription.bolusStep
 
@@ -125,8 +124,8 @@ class FillDialogViewModel(
         _uiState.update {
             FillDialogUiState(
                 insulin = 0.0,
-                siteChange = preselect == FillPreselect.SITE_CHANGE,
-                insulinCartridgeChange = preselect == FillPreselect.CARTRIDGE_CHANGE,
+                siteChange = true,
+                insulinCartridgeChange = false,
                 notes = "",
                 eventTime = dateUtil.now(),
                 eventTimeChanged = false,
