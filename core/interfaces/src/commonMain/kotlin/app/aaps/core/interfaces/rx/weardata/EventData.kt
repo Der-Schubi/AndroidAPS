@@ -633,20 +633,6 @@ sealed class EventData : Event() {
     data class SnoozeAlert(val timeStamp: Long) : EventData()
 
     /**
-     * Wear -> Mobile: Silence on the watch's notification of the phone's alarm ([AlarmRinging]), or its swipe. The
-     * alarm is silenced and its screen on the phone closes, as "Silence and close" on that screen does.
-     */
-    @Serializable
-    data class DismissAlert(val timeStamp: Long) : EventData()
-
-    /**
-     * Wear -> Mobile: "Mute 5 min" on the watch's notification of the phone's alarm. The alarm is silenced and rings
-     * again after [minutes], on the phone and on the watch, as "Mute for 5 minutes" on the phone's screen does.
-     */
-    @Serializable
-    data class MuteAlert(val timeStamp: Long, val minutes: Int) : EventData()
-
-    /**
      * Mobile -> Wear: an alarm rings on the phone, with its title and text. The watch shows them in a notification
      * with Silence, and Mute 5 min when [canMute], so it tells why the phone makes a sound. Sent for the alarm
      * screen ([app.aaps.core.interfaces.ui.UiInteraction.runAlarm], can be muted) and for an urgent notification
