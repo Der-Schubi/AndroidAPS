@@ -1,19 +1,24 @@
 package app.aaps.persistentNotification
 
+import android.app.KeyguardManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Metric
 import androidx.core.app.NotificationCompat.Metric.FixedFloat
 import androidx.core.app.NotificationCompat.Metric.FixedInt
 import androidx.core.app.NotificationCompat.MetricStyle
 import androidx.core.app.RemoteInput
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -83,6 +88,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.math.round
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -160,6 +167,8 @@ class PersistentNotificationPlugin(
     // End Samsung Live Notifications / Now Bar
 
     private var scope: CoroutineScope? = null
+    private val screenEvents = Channel<Unit>(Channel.CONFLATED)
+    private val notificationMutex = Mutex()
     private val deferredStart = DeferredForegroundStart()
     private var lastAutoNotificationContent: String = ""
 
@@ -172,6 +181,15 @@ class PersistentNotificationPlugin(
     private val appVisibilityObserver = object : DefaultLifecycleObserver {
         override fun onStart(owner: LifecycleOwner) = refreshForVisibilityChange()
         override fun onStop(owner: LifecycleOwner) = refreshForVisibilityChange()
+    }
+
+    // With "live update only on lock screen" the notification must change when the phone is locked or
+    // unlocked, not only on the next BG. Screen off, screen on and unlock are the moments that can change it.
+    private val screenStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (!preferences.get(BooleanKey.LiveUpdateLockScreenOnly)) return
+            screenEvents.trySend(Unit)
+        }
     }
 
     @OptIn(FlowPreview::class)
@@ -209,6 +227,19 @@ class PersistentNotificationPlugin(
         // DummyService is what keeps AAPS out of Android's background execution limits. Starting it here
         // is idempotent (startService on a running service is a no-op).
         startDummyService()
+        screenEvents.receiveAsFlow()
+            .collectResilient(newScope, aapsLogger, LTag.CORE) { updateNotification() }
+        val screenStateFilter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+        }
+        // USER_PRESENT comes from SystemUI's separate UID, so NOT_EXPORTED drops the unlock event.
+        // All three actions are protected system broadcasts; ordinary apps cannot send them.
+        ContextCompat.registerReceiver(context, screenStateReceiver, screenStateFilter, ContextCompat.RECEIVER_EXPORTED)
+        // Without this the switch would only take effect with the next BG.
+        preferences.observe(BooleanKey.LiveUpdateLockScreenOnly).drop(1)
+            .collectResilient(newScope, aapsLogger, LTag.CORE) { updateNotification() }
     }
 
     /**
@@ -236,6 +267,11 @@ class PersistentNotificationPlugin(
         Handler(Looper.getMainLooper()).post { ProcessLifecycleOwner.get().lifecycle.removeObserver(appVisibilityObserver) }
         ageRefreshJob?.cancel()
         ageRefreshJob = null
+        try {
+            context.unregisterReceiver(screenStateReceiver)
+        } catch (_: IllegalArgumentException) {
+            // Not registered
+        }
         scope?.cancel()
         scope = null
         deferredStart.cancel()
@@ -290,7 +326,12 @@ class PersistentNotificationPlugin(
         startDummyService()
     }
 
-    private suspend fun updateNotification(includeAuto: Boolean = false) {
+    // Keep an older, locked-screen update from overwriting the notification posted after unlocking.
+    private suspend fun updateNotification(includeAuto: Boolean = false) = notificationMutex.withLock {
+        updateNotificationContent(includeAuto)
+    }
+
+    private suspend fun updateNotificationContent(includeAuto: Boolean) {
         if (!config.appInitialized) return
         val pump = activePlugins.activePump
         var line1: String?
@@ -492,6 +533,9 @@ class PersistentNotificationPlugin(
         line2: String?,
         line3: String?
     ): Boolean {
+        // The user wants the live update only on the lock screen. On Pixel a live update chip in the
+        // status bar hides all other notification icons, so it is left out while the phone is unlocked.
+        if (preferences.get(BooleanKey.LiveUpdateLockScreenOnly) && !isPhoneLocked()) return false
         // Samsung's own system UI (One UI 7+) does not render the standard Android promoted
         // notification below - it shows the lock-screen "Now Bar" and drawer "Live Notifications"
         // through its own proprietary extras, so that needs to be applied separately and does not
@@ -510,6 +554,17 @@ class PersistentNotificationPlugin(
             )
         }
         return true
+    }
+
+    /**
+     * True when the screen is off or the lock screen is shown. The screen off counts as locked, because
+     * Android may lock only some seconds after the screen goes off, and the live update must be ready
+     * when the user looks at the lock screen.
+     */
+    private fun isPhoneLocked(): Boolean {
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        return !powerManager.isInteractive || keyguardManager.isKeyguardLocked
     }
 
     // Samsung Live Notifications / Now Bar (One UI 7+) are driven by this notification extras
