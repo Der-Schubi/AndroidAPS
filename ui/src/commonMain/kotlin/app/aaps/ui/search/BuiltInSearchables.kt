@@ -105,6 +105,7 @@ class BuiltInSearchables(
 
             BooleanKey.OverviewShowNotesInDialogs,
             StringKey.GeneralDarkMode,
+            BooleanKey.LiveUpdateLockScreenOnly,
             BooleanKey.StatusBarBgIcon
         ),
         icon = Icons.Outlined.Palette
