@@ -163,9 +163,9 @@ class PersistentNotificationPlugin(
     private val deferredStart = DeferredForegroundStart()
     private var lastAutoNotificationContent: String = ""
 
-    // One-shot refresh for the moment the glucose in the status bar icon turns stale. Without it nothing would
-    // redraw the icon when no new reading comes in, because the notification is only updated on events.
-    private var staleIconJob: Job? = null
+    // The notification is only updated on events, so the age of the BG ("5m ago") and the stale status bar icon
+    // would stand still until the next reading. This job posts another update at each full minute of that age.
+    private var ageRefreshJob: Job? = null
 
     // The live update pill is hidden while AAPS is on screen. The status bar icon then is the only place where
     // the glucose shows, so the notification is rebuilt when AAPS goes to the foreground or the background.
@@ -234,8 +234,8 @@ class PersistentNotificationPlugin(
 
     override suspend fun onStop() {
         Handler(Looper.getMainLooper()).post { ProcessLifecycleOwner.get().lifecycle.removeObserver(appVisibilityObserver) }
-        staleIconJob?.cancel()
-        staleIconJob = null
+        ageRefreshJob?.cancel()
+        ageRefreshJob = null
         scope?.cancel()
         scope = null
         deferredStart.cancel()
@@ -271,6 +271,18 @@ class PersistentNotificationPlugin(
     private fun isAppInForeground(): Boolean =
         ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
 
+    /** Posts the next update at the next full minute of the BG's age (plus a second, so the minute has turned). */
+    private fun scheduleAgeRefresh(bgTimestamp: Long?) {
+        ageRefreshJob?.cancel()
+        ageRefreshJob = if (bgTimestamp == null) null else scope?.launch {
+            val ageMs = (dateUtil.now() - bgTimestamp).coerceAtLeast(0L)
+            delay(60_000L - ageMs % 60_000L + 1_000L)
+            // Drop the reference first: the update below cancels ageRefreshJob, which would be this very job.
+            ageRefreshJob = null
+            triggerNotificationUpdate()
+        }
+    }
+
     // Called from the collectors, which already run in a coroutine: no runBlocking, which held an IO
     // thread for the whole update.
     private suspend fun triggerNotificationUpdate(includeAuto: Boolean = false) {
@@ -287,6 +299,7 @@ class PersistentNotificationPlugin(
         var line3: String? = null
         var bgStatusChipText: String? = null
         var bgTimestamp: Long? = null
+        var bgAgeText: String? = null
         var bgMetric: Metric? = null
         var metricValue: Metric.MetricValue? = null
         var unreadConversationBuilder: NotificationCompat.CarExtender.UnreadConversation.Builder? = null
@@ -329,6 +342,10 @@ class PersistentNotificationPlugin(
                 } else {
                     line1 += " " + rh.gs(R.string.old_data)
                 }
+                val ageMinutes = ((dateUtil.now() - lastBG.timestamp) / 60_000L).coerceAtLeast(0L)
+                bgAgeText = rh.gs(R.string.bg_age_short, ageMinutes.toInt())
+                line1 += " $bgAgeText"
+                line1WithDelta += " $bgAgeText"
             } else {
                 line1 = rh.gs(CoreUiR.string.missed_bg_readings)
                 line1WithDelta = rh.gs(CoreUiR.string.missed_bg_readings)
@@ -414,7 +431,9 @@ class PersistentNotificationPlugin(
             line1 = rh.gs(CoreUiR.string.no_profile_set)
             line1WithDelta = rh.gs(CoreUiR.string.no_profile_set)
         }
-        val content = "$line1|$line2|$line3"
+        scheduleAgeRefresh(bgTimestamp)
+        // The age changes every minute and must not make Android Auto announce the same BG again.
+        val content = "$line1|$line2|$line3".let { c -> bgAgeText?.let { c.replace(" $it", "") } ?: c }
         if (includeAuto && content == lastAutoNotificationContent) return
         if (includeAuto) lastAutoNotificationContent = content
         val builder = NotificationCompat.Builder(context, notificationHolder.channelID)
@@ -441,17 +460,7 @@ class PersistentNotificationPlugin(
             val ageMs = bgTimestamp?.let { dateUtil.now() - it } ?: Long.MAX_VALUE
             val stale = ageMs > BG_ICON_STALE_AFTER.inWholeMilliseconds
             builder.setSmallIcon(BgNotificationIcon.create(bgIconText, strikeThrough = stale))
-            // Redraw once the reading turns stale. A new reading replaces this job through the next update.
-            staleIconJob?.cancel()
-            staleIconJob = if (stale) null else scope?.launch {
-                delay(BG_ICON_STALE_AFTER.inWholeMilliseconds - ageMs + 1_000L)
-                // Drop the reference first: the update below cancels staleIconJob, which would be this very job.
-                staleIconJob = null
-                triggerNotificationUpdate()
-            }
         } else {
-            staleIconJob?.cancel()
-            staleIconJob = null
             builder.setSmallIcon(iconsProvider.getNotificationIcon())
         }
         builder.setContentTitle(line1)
