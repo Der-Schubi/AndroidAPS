@@ -46,6 +46,13 @@ class StagingAutoPromotionTest {
     }
 
     @Test
+    fun `with no delay it switches at once but the reading checks still apply`() {
+        assertThat(decide(delayHours = 0, startMs = now)).isEqualTo(Decision.PROMOTE)
+        assertThat(decide(delayHours = 0, startMs = now, readings = emptyList())).isEqualTo(Decision.TOO_FEW_RECENT)
+        assertThat(decide(delayHours = 0, startMs = now, readings = everyFiveMinutes(mgdl = 39.0))).isEqualTo(Decision.RAILED)
+    }
+
+    @Test
     fun `needs enough recent readings`() {
         assertThat(decide(readings = everyFiveMinutes().take(3))).isEqualTo(Decision.TOO_FEW_RECENT)
         assertThat(decide(readings = emptyList())).isEqualTo(Decision.TOO_FEW_RECENT)
