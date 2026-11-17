@@ -22,11 +22,14 @@ enum class DexcomOnePlusIntKey(
      *
      * 12 by default, the same settling time the promote button asks for. Below 12 the switch uses
      * the "not settled" path of the button, with its own checks on recent readings.
+     *
+     * 0 switches as soon as the pre-soak sensor has enough recent readings: only the waiting time is
+     * dropped, the checks on the readings stay.
      */
     AutoPromoteHours(
         key = "dexcom_oneplus_staging_auto_promote_hours",
         defaultValue = 12,
-        min = 6,
+        min = 0,
         max = 24,
         title = SourceStrings.staging_auto_promote_hours_title,
         dependency = DexcomOnePlusBooleanKey.AutoPromote,
