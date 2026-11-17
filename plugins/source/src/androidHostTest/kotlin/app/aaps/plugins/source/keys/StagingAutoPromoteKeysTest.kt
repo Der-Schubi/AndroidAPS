@@ -20,6 +20,12 @@ class StagingAutoPromoteKeysTest {
     }
 
     @Test
+    fun `the delay can be set from 0 to 24 hours`() {
+        assertThat(DexcomOnePlusIntKey.AutoPromoteHours.min).isEqualTo(0)
+        assertThat(DexcomOnePlusIntKey.AutoPromoteHours.max).isEqualTo(24)
+    }
+
+    @Test
     fun `the delay is hidden until the switch is on`() {
         assertThat(DexcomOnePlusIntKey.AutoPromoteHours.dependency).isEqualTo(DexcomOnePlusBooleanKey.AutoPromote)
     }
