@@ -208,6 +208,12 @@ fun OverviewScreenSplit(
                         insulinStatus = statusState.insulinStatus,
                         cannulaStatus = statusState.cannulaStatus,
                         batteryStatus = statusState.batteryStatus,
+                        warmUpStatus = statusState.warmUpStatus,
+                        secondSensorStatus = statusState.secondSensorStatus,
+                        canPromoteSecondSensor = statusState.canPromoteSecondSensor,
+                        onPromoteSecondSensor = { statusViewModel.promoteSecondSensor() },
+                        promotionMessage = statusState.promotionMessage,
+                        onDismissPromotionMessage = { statusViewModel.clearPromotionMessage() },
                         showFill = statusState.showFill,
                         showPumpBatteryChange = statusState.showPumpBatteryChange,
                         commandsAllowed = commandsAllowed,
@@ -215,6 +221,19 @@ fun OverviewScreenSplit(
                         statusLightsDef = statusLightsDef,
                         expanded = statusExpanded,
                         onExpandedChange = { statusExpanded = it }
+                    )
+
+                    if (config.AAPSCLIENT) {
+                        val nsClientStatus by graphViewModel.nsClientStatusFlow.collectAsStateWithLifecycle()
+                        val flavorTint = when {
+                            config.AAPSCLIENT3 -> AapsTheme.generalColors.flavorClient3Tint
+                            config.AAPSCLIENT2 -> AapsTheme.generalColors.flavorClient2Tint
+                            else               -> AapsTheme.generalColors.flavorClient1Tint
+                        }
+                        AapsClientStatusCard(
+                            statusData = nsClientStatus,
+                            flavorTint = flavorTint
+                        )
                     )
                     // The QuickLaunch toolbar is centred over both columns, so this one needs space at its end too,
                     // like the graphs column has

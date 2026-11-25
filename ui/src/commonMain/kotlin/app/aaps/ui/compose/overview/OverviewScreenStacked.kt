@@ -204,6 +204,7 @@ fun OverviewScreenStacked(
                     statusData = nsClientStatus,
                     flavorTint = flavorTint
                 )
+
             }
 
             OverviewStatusSection(
@@ -211,6 +212,12 @@ fun OverviewScreenStacked(
                 insulinStatus = statusState.insulinStatus,
                 cannulaStatus = statusState.cannulaStatus,
                 batteryStatus = statusState.batteryStatus,
+                warmUpStatus = statusState.warmUpStatus,
+                secondSensorStatus = statusState.secondSensorStatus,
+                canPromoteSecondSensor = statusState.canPromoteSecondSensor,
+                onPromoteSecondSensor = { statusViewModel.promoteSecondSensor() },
+                promotionMessage = statusState.promotionMessage,
+                onDismissPromotionMessage = { statusViewModel.clearPromotionMessage() },
                 showFill = statusState.showFill,
                 showPumpBatteryChange = statusState.showPumpBatteryChange,
                 commandsAllowed = commandsAllowed,
