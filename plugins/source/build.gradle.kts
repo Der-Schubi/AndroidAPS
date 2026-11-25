@@ -47,9 +47,8 @@ kotlin {
                 // the ONE+ code that does not need the driver.
                 implementation(project(":plugins:dexcom_oneplus"))
 
-                implementation(project.dependencies.platform(libs.androidx.compose.bom))
-                implementation(libs.androidx.compose.material3)
-                implementation(libs.androidx.compose.runtime)
+                implementation(libs.jetbrains.compose.material3)
+                implementation(libs.jetbrains.compose.runtime)
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 implementation(libs.androidx.work.runtime)
 
